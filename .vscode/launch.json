@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+         {
+             "name": "Launch Vue App",
+             "request": "launch",
+             "type": "chrome",
+             "url": "https://localhost:8080",
+             "webRoot": "${workspaceFolder}/www/main/app",
+             "sourceMapPathOverrides": {
+                 "webpack:///./*": "${webRoot}/*"
+             },
+         },
+     ]
+ }

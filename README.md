@@ -273,4 +273,46 @@ Intellisense should now work as you expect inside `.vue` files, for example in `
 
 ## Debugging
 
-Because `vue` has it's own domain specific language it is actually close to impossible to debug through Chrome.
+Because `vue` has it's own domain specific language it is actually close to impossible to debug through Chrome or any other browser, however when set up correctly debugging works perfectly from within VS Code. I know that Linus Torvalds famously said that he [doesn't like debuggers](https://yarchive.net/comp/linux/debuggers.html) and that's fair enough, he's a world class programmer and he is entitled to that opinion, but like most people I'm not a world class programmer and not having access to a debugger is something of a deal-breaker for me. Getting the debugger to work with `.vue` files has been something that many people seem to have struggled with. I guess most people just give up when it doesn't work out of the box and end up doing console logging, but to me that isn't not using a debugger, that is using a really bad debugger. It took me a number of attempts before the debugger finally worked, and I'm pretty sure that you need to have the correct setup described in the [Intellisense](#intellisense) section for it to work, so make sure you've gone through that before going any further.
+
+There are two extension that you need, the first is the the JavaScript Debugger (Nightly).
+
+![javascript debugger extension](assets/debugger-extension.png)
+
+This is installed by default with VS Code, however you need to enable it in your settings (CTRL + ,):
+
+```json
+"debug.javascript.usePreview": true
+```
+
+The second is the Debugger for Chrome.
+
+![chrome debugger extension](assets/chrome-debugger-extension.png)
+
+This extension just delegates to the first one, so it would be nice to do away with it, but I think it is necessary to correctly launch and attach to a remotely debuggable version of Chrome.
+
+The last thing to do is to configure the debug extension to launch our `vue` app and to tell it where to find the source files.
+
+If it doesn't exist already add a new file called `launch.json` in the workspace root's `.vscode` folder (note that this folder probably won't exist and you will need to create it) with the following content.
+
+```json
+{
+   "version": "0.2.0",
+   "configurations": [
+        {
+            "name": "Launch Vue App",
+            "request": "launch",
+            "type": "chrome",
+            "url": "https://localhost:8080",
+            "webRoot": "${workspaceFolder}/www/main/app",
+            "sourceMapPathOverrides": {
+                "webpack:///./*": "${webRoot}/*"
+            },
+        },
+    ]
+}
+```
+
+And that should be it. To test this out set a breakpoint in the `HelloWorld.vue` file on the line that says `export default {` which should be around line 34 and hit `F5`.
+
+If Rama is smiling on you then Chrome will open and the breakpoint will be hit.
